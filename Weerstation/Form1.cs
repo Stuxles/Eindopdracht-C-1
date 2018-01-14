@@ -44,12 +44,13 @@ namespace Weerstation
             label2.Text = cWeather[1];
             if (radioButton1.Checked)
             {
-                double fahrint = double.Parse(cWeather[2]) * 1.8 + 32;
-                label3.Text = fahrint + "F";
+                double fahrint = Convert.ToInt32(double.Parse(cWeather[2]) * 1.8 + 32);
+                label3.Text = fahrint + " F";
             }
             if (radioButton2.Checked)
             {
-                label3.Text = cWeather[2] + "°C";
+                int celcius = Convert.ToInt32(double.Parse(cWeather[2]));
+                label3.Text = celcius + " °C";
             }
             label4.Text = cWeather[3]+"%";
             label5.Text = cWeather[4]+"km/h";
