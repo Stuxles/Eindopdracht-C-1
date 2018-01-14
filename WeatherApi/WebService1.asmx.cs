@@ -44,7 +44,7 @@ namespace WeatherApi
         }
 
         [WebMethod]
-        public String[] Forecast(String place)
+        public String[] AllForecast(String place)
         {
             using (WebClient wcumum = new WebClient())
             {
@@ -52,7 +52,9 @@ namespace WeatherApi
                 var jsonres = wcumum.DownloadString(request);
                 var objectres = JsonConvert.DeserializeObject<Forecastmap.RootObject>(jsonres);
                 Forecastmap.RootObject resultobj = objectres;
-                var arr2 = new string[] {resultobj.List[0].Main.Temp.ToString()};
+                int lsize = resultobj.List.Count;
+
+                var arr2 = new string[] {resultobj.List[0].Main.Temp.ToString(), resultobj.List[0].Dt_txt};
                 return arr2;
             }
             
@@ -105,6 +107,7 @@ namespace WeatherApi
             {
                 public int Dt { get; set; }
                 public Main Main { get; set; }
+                public string Dt_txt { get; set; }
             }
 
             public class RootObject
