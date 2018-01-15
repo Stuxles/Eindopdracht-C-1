@@ -32,7 +32,8 @@ namespace Weerstation
 
         private void ToDb(DateTime date, double temp)
         {
-            string query = "INSERT INTO trend(dateTrend, tempTrend)VALUES('" + date + "','" + temp + "');";
+            string sqlDate = date.ToString("yyyy-MM-dd H:mm:ss");
+            string query = "INSERT INTO trend(dateTrend, tempTrend)VALUES('" + sqlDate + "','" + temp + "');";
             MySqlConnection conDatabase = new MySqlConnection(conSql);
             MySqlCommand cmdDatabase = new MySqlCommand(query, conDatabase);
             MySqlDataReader myReader;
