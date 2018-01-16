@@ -30,10 +30,10 @@ namespace Weerstation
             UpdateWeather();
         }
 
-        private void ToDb(DateTime date, double temp)
+        private void ToDb(DateTime date, double temp, string place)
         {
             string sqlDate = date.ToString("yyyy-MM-dd H:mm:ss");
-            string query = "INSERT INTO trend(dateTrend, tempTrend)VALUES('" + sqlDate + "','" + temp + "');";
+            string query = "INSERT INTO trend(dateTrend, tempTrend, plaatsTrend)VALUES('" + sqlDate + "','" + temp + "','" + place + "');";
             MySqlConnection conDatabase = new MySqlConnection(conSql);
             MySqlCommand cmdDatabase = new MySqlCommand(query, conDatabase);
             MySqlDataReader myReader;
@@ -44,6 +44,28 @@ namespace Weerstation
                 while (myReader.Read())
                 {
                     
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void FromDB(string place)
+        {
+            string query = "SELECT dateTrend, tempTrend FROM trend WHERE plaatsTrend ='" + place + "'  AND dateTrend >= DATE(NOW()) - INTERVAL 5 DAY";
+            MySqlConnection conDatabase = new MySqlConnection(conSql);
+            MySqlCommand cmdDatabase = new MySqlCommand(query, conDatabase);
+            MySqlDataReader myReader;
+            try
+            {
+                conDatabase.Open();
+                myReader = cmdDatabase.ExecuteReader();
+                while (myReader.Read())
+                {
+                    DateTime tdate = myReader.GetDateTime("dateTrend");
+                    chart1.Series["Series1"].Points.AddXY(tdate.ToString(), myReader.GetDouble("tempTrend"));
                 }
             }
             catch (Exception ex)
@@ -79,12 +101,12 @@ namespace Weerstation
                 label3.Text = celcius + " °C";
                 contextMenuStrip1.Items[0].Text = "Huidige temperatuur " + celcius + " °C";
             }
-            ToDb(DateTime.Now, Convert.ToInt32(double.Parse(cWeather[2])));
+            ToDb(DateTime.Now, Convert.ToInt32(double.Parse(cWeather[2])), cWeather[0]);
             label4.Text = cWeather[3]+"%";
             label5.Text = cWeather[4]+"km/h";
             pictureBox1.ImageLocation = cWeather[5];
             label6.Text = "(Laatste update: " + DateTime.Now.ToLongTimeString() + ")";
-            
+            FromDB(Plaats.Text);
                 _weatherTimer = 0;
         }
 
@@ -119,6 +141,7 @@ namespace Weerstation
         private void verversenToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UpdateWeather();
+            FromDB(Plaats.Text);
         }
 
         private void optiesToolStripMenuItem_Click(object sender, EventArgs e)
